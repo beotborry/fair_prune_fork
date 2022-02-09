@@ -14,6 +14,9 @@ def main():
 
     torch.backends.cudnn.enabled = True
 
+    device = torch.device(f'cuda:{args.device}' if torch.cuda.is_available() else 'cpu')
+    torch.cuda.set_device(device)
+
     seed = args.seed
     set_seed(seed)
 

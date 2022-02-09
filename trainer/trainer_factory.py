@@ -4,7 +4,7 @@ import os
 import importlib
 
 import torch.optim as optim
-from torch.optim.lr_scheduler import ReduceLROnPlateau, MultiStepLR
+from torch.optim.lr_scheduler import ReduceLROnPlateau, MultiStepLR, StepLR
 from sklearn.metrics import confusion_matrix
 from utils import get_accuracy
 
@@ -47,11 +47,12 @@ class GenericTrainer:
         self.model = model
         if not (args.method == 'mfd_decouple' or args.method == 'mfdf_decouple'):
             if 'SGD' in args.optimizer:
-                self.optimizer = optim.SGD(self.model.parameters(), lr=args.lr, momentum=0.9, weight_decay=args.weight_decay)
+                self.optimizer = optim.SGD(self.model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
                 self.scheduler = MultiStepLR(self.optimizer, [self.epochs//3, self.epochs//3 * 2], gamma=0.1)
             else:
                 self.optimizer = optim.Adam(self.model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-                self.scheduler = ReduceLROnPlateau(self.optimizer, patience=5)
+                self.scheduler = StepLR(self.optimizer, step_size=30, gamma=0.1)
+                #self.scheduler = ReduceLROnPlateau(self.optimizer, patience=5)
 
         self.optim_type = args.optimizer
 
@@ -87,7 +88,7 @@ class GenericTrainer:
         with torch.no_grad():
             for j, eval_data in enumerate(loader):
                 # Get the inputs
-                inputs, groups, targets, idxs = eval_data
+                inputs, _, groups, targets, idxs = eval_data
                 #
                 # labels = labels.long() if num_classes >2 else labels.float()
                 labels = targets.long()
@@ -129,9 +130,21 @@ class GenericTrainer:
 
             eval_loss = eval_loss / eval_data_count.sum() if not groupwise else eval_loss / eval_data_count
             eval_acc = eval_acc / eval_data_count.sum() if not groupwise else eval_acc / eval_data_count
-            eval_eopp_list = eval_eopp_list / eval_data_count
-            eval_max_eopp = torch.max(eval_eopp_list, dim=0)[0] - torch.min(eval_eopp_list, dim=0)[0]
-            eval_max_eopp = torch.max(eval_max_eopp).item()
+            # eval_eopp_list = eval_eopp_list / eval_data_count
+
+            # for eopp
+            group0_fn = eval_data_count[0, 1] - eval_eopp_list[0, 1]
+            group0_tp = eval_eopp_list[0, 1]
+            group1_fn = eval_data_count[1, 1] - eval_eopp_list[1, 1]
+            group1_tp = eval_eopp_list[1, 1]
+
+            pivot = (group0_tp + group1_tp) / (group0_fn + group0_tp + group1_fn + group1_tp)
+            group0_tpr = group0_tp / (group0_fn + group0_tp)
+            group1_tpr = group1_tp / (group1_fn + group1_tp)
+            eval_max_eopp = max(abs(group0_tpr - pivot), abs(group1_tpr - pivot))
+            
+            # eval_max_eopp = torch.max(eval_eopp_list, dim=0)[0] - torch.min(eval_eopp_list, dim=0)[0]
+            # eval_max_eopp = torch.max(eval_max_eopp).item()
 
         model.train()
         return eval_loss, eval_acc, eval_max_eopp

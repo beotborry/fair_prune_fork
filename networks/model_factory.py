@@ -63,6 +63,7 @@ def get_mlp(method, img_size, hidden_nodes, num_layer, num_classes, num_groups=2
                                     num_layer=num_layer, num_groups=num_groups, no_groupmask=no_groupmask,
                                     decouple_at=decouple_at)
         else:
+            # print(img_size, hidden_nodes, num_classes, num_layer)
             return MLP(feature_size=img_size, hidden_dim=hidden_nodes, num_classes=num_classes,
                        num_layer=num_layer)
 

@@ -110,7 +110,7 @@ class Trainer(trainer.GenericTrainer):
         for i, data in enumerate(train_loader):
             batch_start_time = time.time()
             # Get the inputs
-            inputs, groups, targets, indexes = data
+            inputs, _, groups, targets, indexes = data
 
             labels = targets
             # labels = labels.float() if num_classes == 2 else labels.long()
@@ -183,7 +183,7 @@ class Trainer(trainer.GenericTrainer):
         S_set = []
 
         for i, data in enumerate(dataloader):
-            inputs, sen_attrs, targets, indexes = data
+            inputs, _, sen_attrs, targets, indexes = data
             Y_set.append(targets)
             S_set.append(sen_attrs)
 

@@ -36,11 +36,11 @@ def get_args():
                         help='(default=%(default)s)')
     parser.add_argument('--labelwise', default=False, action='store_true', help='labelwise loader')
     parser.add_argument('--model', default='', required=True, choices=['resnet18', 'shufflenet', 'mlp'])
-    parser.add_argument('--num-layer', default=3, type=int, help='number of layers for mlp')
+    parser.add_argument('--num-layer', default=2, type=int, help='number of layers for mlp')
 
     parser.add_argument('--decouple-at', default=-1, type=int, help='from which layer start to decouple')
 
-    parser.add_argument('--hidden-nodes', default=64, type=int, help='number of hidden nodes for mlp')
+    parser.add_argument('--hidden-nodes', default=50, type=int, help='number of hidden nodes for mlp')
 
     parser.add_argument('--parallel', default=False, action='store_true', help='data parallel')
     parser.add_argument('--pretrained', default=False, action='store_true', help='load imagenet pretrained model')

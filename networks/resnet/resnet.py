@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
 import torchvision
-from torchvision.models.utils import load_state_dict_from_url
+from torch.hub import load_state_dict_from_url
+#from torchvision.models.utils import load_state_dict_from_url
 from networks.sequential import Sequential
 from networks.resnet.resnet_util import conv3x3
 __all__ = ['ResNet', 'resnet18']

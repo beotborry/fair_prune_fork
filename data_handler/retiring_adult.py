@@ -18,7 +18,7 @@ class RetiringDataset_torch(TabularDataset):
         self.num_classes = 2
 
         super(RetiringDataset_torch, self).__init__(root=root, dataset=dataset, sen_attr_idx=sen_attr_idx,
-                                                 split=split, group_mode=group_mode, influence_scores=influence_scores)
+                                                 split=split, group_mode=group_mode)
 
 
 # def load_preproc_data_adult(protected_attributes=None, sub_samp=False, balance=False):

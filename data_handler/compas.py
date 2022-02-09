@@ -6,7 +6,7 @@ from data_handler.tabular_dataset import TabularDataset
 class CompasDataset_torch(TabularDataset):
     """Adult dataset."""
 
-    def __init__(self, root, split='train',sen_attr='race', group_mode=-1, influence_scores=None):
+    def __init__(self, root, split='train',sen_attr='race', group_mode=-1):
 
         # dataset = load_preproc_data_compas()
         dataset = CompasDataset(root_dir=root)
@@ -21,7 +21,7 @@ class CompasDataset_torch(TabularDataset):
         self.num_classes = 2
 
         super(CompasDataset_torch, self).__init__(root=root, dataset=dataset, sen_attr_idx=sen_attr_idx,
-                                                  split=split, group_mode=group_mode, influence_scores=influence_scores)
+                                                  split=split, group_mode=group_mode)
 
 
 # def load_preproc_data_compas(protected_attributes=None):

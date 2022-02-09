@@ -178,7 +178,7 @@ class GenericTrainer:
         with torch.no_grad():
             for i, data in enumerate(dataloader):
                 # Get the inputs
-                inputs, groups, targets, idxs = data
+                inputs, _, groups, targets, idxs = data
                 labels = targets
                 groups = groups.long()
 

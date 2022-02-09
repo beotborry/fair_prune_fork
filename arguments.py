@@ -11,7 +11,7 @@ def get_args():
     parser.add_argument('--device', default=0, type=int, help='cuda device number')
     parser.add_argument('--dataset', required=True, default='', choices=['utkface', 'celeba',
                                                                          'adult', 'compas', 'cifar10s', 'cifar10cg',
-                                                                         'credit', 'bank'])
+                                                                         'credit', 'bank', 'retiring_adult', 'retiring_adult_coverage'])
     parser.add_argument('--sen-attr', default='sex', type=str, choices=['sex', 'race', 'marital', 'age'],
                         help='sensitive attribute for dataset')
 

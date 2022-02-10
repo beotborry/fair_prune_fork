@@ -105,7 +105,7 @@ def make_log_name(args):
             log_name += '_alpha{}'.format(args.alpha)
 
         elif args.method == 'reweighting':
-            log_name += '_eta{}_iter{}'.format(args.eta, args.iteration)
+            log_name += '_constraint{}_eta{}_iter{}'.format(args.reweighting_target_criterion, args.eta, args.iteration)
 
         elif args.method == 'scratch_mmd' or args.method.startswith('mfd'):
             log_name += '_lamb{}'.format(args.lamb)

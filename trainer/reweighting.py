@@ -92,8 +92,11 @@ class Trainer(trainer.GenericTrainer):
                 acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, num_groups, num_classes)
             elif self.reweighting_target_criterion == 'eo':
                 acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, num_groups, num_classes)
+            elif self.reweighting_target_criterion == 'eopp':
+                acc, violations = self.get_error_and_violations_EOPP(Y_pred_train, Y_train, S_train, num_groups, num_classes)
+            #print(eta_learning_rate)
             extended_multipliers -= eta_learning_rate * violations
-            
+            print("vio:", violations,"weight:",  weight_set)
 
         print('Training Finished!')
 
@@ -230,17 +233,33 @@ class Trainer(trainer.GenericTrainer):
         print('violations',violations)
         return acc, violations
 
+    def get_error_and_violations_EOPP(self, y_pred, label, sen_attrs, num_groups=2, num_classes=2):
+        acc = torch.mean((y_pred == label).float())
+        total_num = len(y_pred)
+        violations = torch.zeros((num_groups, num_classes))
+        for g in range(num_groups):
+            c = 1
+            class_idxs = torch.where(label==c)[0]
+            pred_class_idxs = torch.where(torch.logical_and(y_pred == c, label == c))[0]
+            pivot = len(pred_class_idxs) / len(class_idxs)
+            group_class_idxs = torch.where(torch.logical_and(sen_attrs == g, label == c))[0]
+            group_pred_class_idxs = torch.where(torch.logical_and(torch.logical_and(sen_attrs == g, y_pred == c), label == c))[0]
+            violations[g, 0] = len(group_pred_class_idxs)/len(group_class_idxs) - pivot
+            violations[g, 1] = violations[g, 0]
+        print('violations', violations)
+        return acc, violations
+
 
     # update weight
     def debias_weights(self, label, sen_attrs, extended_multipliers, num_groups, num_classes):  #
         weights = torch.zeros(len(label))
-        w_matrix = torch.sigmoid(extended_multipliers) # g by c
-        weights = w_matrix[sen_attrs, label]
-#         for i in range(num_groups):  ##
-#             group_idxs = torch.where(sen_attrs == i)[0]
-#             w_tilde = torch.exp(extended_multipliers[i])
-#             weights[group_idxs] += w_tilde[label[group_idxs]]
-#             weights[group_idxs] /= torch.sum(torch.exp(extended_multipliers), axis=0)[label[group_idxs]] #
+       # w_matrix = torch.sigmoid(extended_multipliers) # g by c
+       # weights = w_matrix[sen_attrs, label]
+        for i in range(num_groups):
+             group_idxs = torch.where(sen_attrs == i)[0]
+             w_tilde = torch.exp(extended_multipliers[i])
+             weights[group_idxs] += w_tilde[label[group_idxs]]
+             weights[group_idxs] /= torch.sum(torch.exp(extended_multipliers), axis=0)[label[group_idxs]] #
                 
         return weights
 

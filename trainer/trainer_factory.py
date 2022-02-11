@@ -130,21 +130,21 @@ class GenericTrainer:
 
             eval_loss = eval_loss / eval_data_count.sum() if not groupwise else eval_loss / eval_data_count
             eval_acc = eval_acc / eval_data_count.sum() if not groupwise else eval_acc / eval_data_count
-            # eval_eopp_list = eval_eopp_list / eval_data_count
+            eval_eopp_list = eval_eopp_list / eval_data_count
 
             # for eopp
-            group0_fn = eval_data_count[0, 1] - eval_eopp_list[0, 1]
-            group0_tp = eval_eopp_list[0, 1]
-            group1_fn = eval_data_count[1, 1] - eval_eopp_list[1, 1]
-            group1_tp = eval_eopp_list[1, 1]
+            #group0_fn = eval_data_count[0, 1] - eval_eopp_list[0, 1]
+            #group0_tp = eval_eopp_list[0, 1]
+            #group1_fn = eval_data_count[1, 1] - eval_eopp_list[1, 1]
+            #group1_tp = eval_eopp_list[1, 1]
 
-            pivot = (group0_tp + group1_tp) / (group0_fn + group0_tp + group1_fn + group1_tp)
-            group0_tpr = group0_tp / (group0_fn + group0_tp)
-            group1_tpr = group1_tp / (group1_fn + group1_tp)
-            eval_max_eopp = max(abs(group0_tpr - pivot), abs(group1_tpr - pivot))
+            #pivot = (group0_tp + group1_tp) / (group0_fn + group0_tp + group1_fn + group1_tp)
+            #group0_tpr = group0_tp / (group0_fn + group0_tp)
+            #group1_tpr = group1_tp / (group1_fn + group1_tp)
+            #eval_max_eopp = max(abs(group0_tpr - pivot), abs(group1_tpr - pivot))
             
-            # eval_max_eopp = torch.max(eval_eopp_list, dim=0)[0] - torch.min(eval_eopp_list, dim=0)[0]
-            # eval_max_eopp = torch.max(eval_max_eopp).item()
+            eval_max_eopp = torch.max(eval_eopp_list, dim=0)[0] - torch.min(eval_eopp_list, dim=0)[0]
+            eval_max_eopp = torch.max(eval_max_eopp).item()
 
         model.train()
         return eval_loss, eval_acc, eval_max_eopp

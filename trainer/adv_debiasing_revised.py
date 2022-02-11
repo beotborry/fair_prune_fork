@@ -74,7 +74,7 @@ class Trainer(trainer.GenericTrainer):
 
         for i, data in enumerate(train_loader):
             # Get the inputs
-            inputs, groups, targets, _ = data
+            inputs, _, groups, targets, _ = data
             labels = targets
             # groups = groups.long()
 
@@ -171,7 +171,7 @@ class Trainer(trainer.GenericTrainer):
         with torch.no_grad():
             for j, eval_data in enumerate(loader):
                 # Get the inputs
-                inputs, groups, classes, _ = eval_data
+                inputs, _, groups, classes, _ = eval_data
                 #
                 labels = classes
                 groups = groups.long()

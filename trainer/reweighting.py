@@ -96,7 +96,7 @@ class Trainer(trainer.GenericTrainer):
                 acc, violations = self.get_error_and_violations_EOPP(Y_pred_train, Y_train, S_train, num_groups, num_classes)
             #print(eta_learning_rate)
             extended_multipliers -= eta_learning_rate * violations
-            print("vio:", violations,"weight:",  weight_set)
+            print("extended_multipliers:", extended_multipliers,"weight:",  weight_set)
 
         print('Training Finished!')
 
@@ -120,6 +120,7 @@ class Trainer(trainer.GenericTrainer):
             labels = labels.long()
 
             weights = weight_set[indexes[0]]
+            #print("train weights:", weights)
 
             if self.cuda:
                 inputs = inputs.cuda()
@@ -253,13 +254,13 @@ class Trainer(trainer.GenericTrainer):
     # update weight
     def debias_weights(self, label, sen_attrs, extended_multipliers, num_groups, num_classes):  #
         weights = torch.zeros(len(label))
-       # w_matrix = torch.sigmoid(extended_multipliers) # g by c
-       # weights = w_matrix[sen_attrs, label]
-        for i in range(num_groups):
-             group_idxs = torch.where(sen_attrs == i)[0]
-             w_tilde = torch.exp(extended_multipliers[i])
-             weights[group_idxs] += w_tilde[label[group_idxs]]
-             weights[group_idxs] /= torch.sum(torch.exp(extended_multipliers), axis=0)[label[group_idxs]] #
+        w_matrix = torch.sigmoid(extended_multipliers) # g by c
+        weights = w_matrix[sen_attrs, label]
+       # for i in range(num_groups):
+       #      group_idxs = torch.where(sen_attrs == i)[0]
+       #      w_tilde = torch.exp(extended_multipliers[i])
+       #      weights[group_idxs] += w_tilde[label[group_idxs]]
+       #      weights[group_idxs] /= torch.sum(torch.exp(extended_multipliers), axis=0)[label[group_idxs]] #
                 
         return weights
 

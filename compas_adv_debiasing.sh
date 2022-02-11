@@ -1,7 +1,16 @@
 #!/bin/bash
+# for test
+# python3 main.py --device 1 --dataset compas --sen-attr sex --lr 0.0005 --epoch 50 --batch-size 128 --seed 777 --method adv_debiasing --optimizer Adam --model mlp --img-size 401 --weight-decay 0.0005 --date 20220211 --eta 0.001 --adv-lambda 1 --target-criterion eopp
+
 
 for seed in 0 1 2 3 4
 do 
-    python3 main.py --device 1 --dataset compas --sen-attr sex --lr 0.0005 --epoch 50 --batch-size 128 --seed $seed --method adv_debiasing --optimizer Adam --model mlp --reweighting-target-criterion eo --img-size 401 --weight-decay 0.0005 --iteration 10 --date 20220210
-    #python3 main.py --device 1 --dataset compas --sen-attr sex --lr 0.0005 --epoch 50 --batch-size 128 --seed $seed --method reweighting --optimizer Adam --model mlp --reweighting-target-criterion eo --img-size 401 --eta $eta --weight-decay 0.0005
+	for lambda in 1 2 3 4 5 6 7 8 9 10
+	do
+		for eta in 0.001 0.003 0.005 0.007 0.01
+		do
+			python3 main.py --device 1 --dataset compas --sen-attr sex --lr 0.0005 --epoch 50 --batch-size 128 --seed $seed --method adv_debiasing --optimizer Adam --model mlp --img-size 401 --weight-decay 0.0005 --date 20220211 --eta $eta --adv-lambda $lambda --target-criterion eopp
+			python3 main.py --device 1 --dataset compas --sen-attr sex --lr 0.0005 --epoch 50 --batch-size 128 --seed $seed --method adv_debiasing --optimizer Adam --model mlp --img-size 401 --weight-decay 0.0005 --date 20220211 --eta $eta --adv-lambda $lambda --target-criterion eo
+		done
+	done
 done

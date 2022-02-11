@@ -97,6 +97,7 @@ class Trainer(trainer.GenericTrainer):
 
 
             inputs_for_adv = outputs[-2] if get_inter else outputs
+            # print(inputs_for_adv)
             logits = outputs[-1] if get_inter else outputs
 
             adv_inputs = None
@@ -109,8 +110,17 @@ class Trainer(trainer.GenericTrainer):
             elif self.target_criterion == 'dp':
                 adv_inputs = inputs_for_adv
 
+            elif self.target_criterion == 'eopp':
+                y1_idx = torch.where(labels.long() == 1)[0]
+                adv_inputs = inputs_for_adv[y1_idx]
+
             adv_preds = self.sa_clf(adv_inputs)
-            adv_loss = self.adv_criterion(self.sa_clf, adv_preds, groups)
+            if self.target_criterion != "eopp":
+                adv_loss = self.adv_criterion(self.sa_clf, adv_preds, groups)
+            else:
+                if len(adv_preds.shape) != 2:
+                    adv_preds = torch.unsqueeze(adv_preds, 0)
+                adv_loss = self.adv_criterion(self.sa_clf, adv_preds, groups[y1_idx])
 
             self.optimizer.zero_grad()
             self.adv_optimizer.zero_grad()
@@ -203,6 +213,11 @@ class Trainer(trainer.GenericTrainer):
 
                 elif self.target_criterion == 'dp':
                     adv_inputs = inputs_for_adv
+                
+                elif self.target_criterion == 'eopp':
+                    y1_idx = torch.where(labels.long() == 1)[0]
+                    adv_inputs = inputs_for_adv[y1_idx]
+
 
                 loss = criterion(model, logits, labels)
                 eval_loss += loss.item() * len(labels)
@@ -219,15 +234,26 @@ class Trainer(trainer.GenericTrainer):
                 adv_preds = adversary(adv_inputs)
                 # groups = groups.float() if num_groups == 2 else groups.long()
                 groups = groups.long()
-                adv_loss = adv_criterion(model, adv_preds, groups)
-                eval_adv_loss += adv_loss.item() * len(labels)
+                if self.target_criterion != "eopp":
+                    adv_loss = adv_criterion(model, adv_preds, groups)
+                    eval_adv_loss += adv_loss.item() * len(labels)
+                    eval_adv_acc += get_accuracy(adv_preds, groups)
+                else:
+                    if len(adv_preds.shape) != 2:
+                        adv_preds = torch.unsqueeze(adv_preds, 0)
+                    adv_loss = adv_criterion(model, adv_preds, groups[y1_idx])
+                    eval_adv_loss += adv_loss.item() * len(labels[y1_idx])
+                    eval_adv_acc += get_accuracy(adv_preds, groups[y1_idx])
                 # binary = True if num_groups == 2 else False
-                eval_adv_acc += get_accuracy(adv_preds, groups)
 
             eval_loss = eval_loss / eval_data_count.sum()
             eval_acc = eval_acc / eval_data_count.sum()
-            eval_adv_loss = eval_adv_loss / eval_data_count.sum()
-            eval_adv_acc = eval_adv_acc / eval_data_count.sum()
+            if self.target_criterion != "eopp":
+                eval_adv_loss = eval_adv_loss / eval_data_count.sum()
+                eval_adv_acc = eval_adv_acc / eval_data_count.sum()
+            else:
+                eval_adv_loss = eval_adv_loss / eval_data_count[:, 1].sum()
+                eval_adv_acc = eval_adv_acc / eval_data_count[:, 1].sum()
             eval_eopp_list = eval_eopp_list / eval_data_count
             eval_max_eopp = torch.max(eval_eopp_list, dim=0)[0] - torch.min(eval_eopp_list, dim=0)[0]
             eval_max_eopp = torch.max(eval_max_eopp).item()
@@ -250,6 +276,8 @@ class Trainer(trainer.GenericTrainer):
             if self.target_criterion == 'eo':
                 feature_size = num_classes * (num_classes + 1)
             elif self.target_criterion == 'dp':
+                feature_size = num_classes
+            elif self.target_criterion == 'eopp':
                 feature_size = num_classes
 
 

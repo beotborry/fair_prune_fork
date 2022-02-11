@@ -95,7 +95,7 @@ def get_args():
     parser.add_argument('--teacher-type', default=None, choices=['resnet12', 'resnet18', 'resnet34', 'resnet50',
                                                                  'mobilenet', 'shufflenet', 'cifar_net', 'mlp'])
     parser.add_argument('--teacher-path', default=None, help='teacher model path')
-    parser.add_argument('--target-criterion', default='eo', choices=['dp', 'eo'], type=str,
+    parser.add_argument('--target-criterion', default='eo', choices=['dp', 'eo', 'eopp'], type=str,
                         help='target fairness criterion mfd')
     parser.add_argument('--get-teacher-weight', action='store_true', default=False,
                         help='init student model with teacher weight')

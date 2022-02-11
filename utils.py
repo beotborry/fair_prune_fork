@@ -90,7 +90,7 @@ def make_log_name(args):
             log_name += '_labelwise'
 
         if args.method =='adv_debiasing':
-            log_name += '_adv_lamb{}_eta{}'.format(args.adv_lambda, args.eta)
+            log_name += '_adv_lamb{}_eta{}_constraint{}'.format(args.adv_lambda, args.eta, args.target_criterion)
 
         elif args.method.startswith('decouple'):
             log_name += '_{}'.format(args.group_estimator)

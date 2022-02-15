@@ -17,7 +17,7 @@ class TabularDataset(data_handler.GenericDataset):
         self.sen_attr_idx = sen_attr_idx
         
         dataset_train, dataset_test = dataset.split([0.8], shuffle=True, seed=0)
-        dataset_train, dataset_valid = dataset_train.split([0.8], shuffle=True, seed=0)
+        # dataset_train, dataset_valid = dataset_train.split([0.8], shuffle=True, seed=0)
         
         # for leave out training
         # if  self.split == 'train' and len(kwargs['influence_scores']) != 0:
@@ -30,7 +30,7 @@ class TabularDataset(data_handler.GenericDataset):
         # features, labels = self._balance_test_set(dataset)
         # self.dataset = dataset_train if self.split == 'train' else dataset_test
         if self.split == 'train': self.dataset = dataset_train
-        elif self.split == 'valid': self.dataset = dataset_valid
+        # elif self.split == 'valid': self.dataset = dataset_valid
         else: self.dataset = dataset_test
         
         features = np.delete(self.dataset.features, self.sen_attr_idx, axis=1)

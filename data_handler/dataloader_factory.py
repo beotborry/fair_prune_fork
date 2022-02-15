@@ -18,12 +18,12 @@ class DataloaderFactory:
                                                   group_mode=group_mode, sen_attr=sen_attr, skew_ratio=skew_ratio)
         train_dataset = DatasetFactory.get_dataset(name, split='train', target=target,
                                                    group_mode=group_mode, sen_attr=sen_attr, skew_ratio=skew_ratio)
-        valid_dataset = DatasetFactory.get_dataset(name, split='valid', target=target,
-                                                   group_mode=group_mode, sen_attr=sen_attr, skew_ratio=skew_ratio)
+        # valid_dataset = DatasetFactory.get_dataset(name, split='valid', target=target,
+        #                                            group_mode=group_mode, sen_attr=sen_attr, skew_ratio=skew_ratio)
 
         print('# data of test ',  len(test_dataset))
         print('# data of train ', len(train_dataset))
-        print('# data of valid ', len(valid_dataset))
+        # print('# data of valid ', len(valid_dataset))
 
         def _init_fn(worker_id):
             np.random.seed(int(seed))
@@ -45,9 +45,9 @@ class DataloaderFactory:
         train_dataloader = DataLoader(train_dataset, batch_size=batch_size, sampler=sampler,
                                       shuffle=shuffle, num_workers=num_workers, worker_init_fn=_init_fn,
                                       pin_memory=True, drop_last=False)
-        valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, sampler=sampler,
-                                      shuffle=shuffle, num_workers=num_workers, worker_init_fn=_init_fn,
-                                      pin_memory=True, drop_last=False)
+        # valid_dataloader = DataLoader(valid_dataset, batch_size=batch_size, sampler=sampler,
+        #                               shuffle=shuffle, num_workers=num_workers, worker_init_fn=_init_fn,
+        #                               pin_memory=True, drop_last=False)
 
         test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False,
                                      num_workers=num_workers, worker_init_fn=_init_fn, pin_memory=True, drop_last=False)
@@ -57,5 +57,5 @@ class DataloaderFactory:
         num_classes = test_dataset.num_classes
         num_groups = test_dataset.num_groups
 
-        return num_classes, num_groups, train_dataloader, valid_dataloader, test_dataloader
+        return num_classes, num_groups, train_dataloader, None, test_dataloader
 

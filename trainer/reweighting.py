@@ -72,8 +72,8 @@ class Trainer(trainer.GenericTrainer):
                       (epoch + 1, epochs, self.method,
                        eval_loss, eval_acc, eval_deopp, (eval_end_time - eval_start_time)))
 
-                if self.scheduler != None:
-                    self.scheduler.step(eval_loss)
+                # if self.scheduler != None:
+                #     self.scheduler.step(eval_loss)
 
             end_t = time.time()
             train_t = int((end_t - start_t) / 60)
@@ -242,10 +242,10 @@ class Trainer(trainer.GenericTrainer):
             c = 1
             class_idxs = torch.where(label==c)[0]
             pred_class_idxs = torch.where(torch.logical_and(y_pred == c, label == c))[0]
-            pivot = len(pred_class_idxs) / len(class_idxs)
+            pivot = len(pred_class_idxs) / len(class_idxs) # P(y_hat = 1 | y = 1)
             group_class_idxs = torch.where(torch.logical_and(sen_attrs == g, label == c))[0]
             group_pred_class_idxs = torch.where(torch.logical_and(torch.logical_and(sen_attrs == g, y_pred == c), label == c))[0]
-            violations[g, 0] = len(group_pred_class_idxs)/len(group_class_idxs) - pivot
+            violations[g, 0] = len(group_pred_class_idxs)/len(group_class_idxs) - pivot # P(y_hat = 1 | g = g, y = 1) - P(y_hat = 1 | y = 1)
             violations[g, 1] = violations[g, 0]
         print('violations', violations)
         return acc, violations
@@ -256,12 +256,13 @@ class Trainer(trainer.GenericTrainer):
         weights = torch.zeros(len(label))
         w_matrix = torch.sigmoid(extended_multipliers) # g by c
         weights = w_matrix[sen_attrs, label]
-       # for i in range(num_groups):
-       #      group_idxs = torch.where(sen_attrs == i)[0]
-       #      w_tilde = torch.exp(extended_multipliers[i])
-       #      weights[group_idxs] += w_tilde[label[group_idxs]]
-       #      weights[group_idxs] /= torch.sum(torch.exp(extended_multipliers), axis=0)[label[group_idxs]] #
-                
+
+        # for i in range(num_groups):
+        #         group_idxs = torch.where(sen_attrs == i)[0]
+        #         w_tilde = torch.exp(extended_multipliers[i])
+        #         weights[group_idxs] += w_tilde[label[group_idxs]]
+        #         weights[group_idxs] /= torch.sum(torch.exp(extended_multipliers), axis=0)[label[group_idxs]] #
+                    
         return weights
 
 

@@ -59,7 +59,7 @@ class Trainer(trainer.GenericTrainer):
         for iter_ in range(n_iters):
             start_t = time.time()
             # update weight (normalization from w_tilde)
-            weight_set = self.debias_weights(Y_train, S_train, extended_multipliers, num_groups, num_classes)   #
+            weight_set = self.debias_weights(self.reweighting_target_criterion, Y_train, S_train, extended_multipliers, num_groups, num_classes)   #
             
             for epoch in range(epochs):
                 lb_idx = self._train_epoch(epoch, train_loader, model, weight_set)
@@ -245,18 +245,28 @@ class Trainer(trainer.GenericTrainer):
             pivot = len(pred_class_idxs) / len(class_idxs) # P(y_hat = 1 | y = 1)
             group_class_idxs = torch.where(torch.logical_and(sen_attrs == g, label == c))[0]
             group_pred_class_idxs = torch.where(torch.logical_and(torch.logical_and(sen_attrs == g, y_pred == c), label == c))[0]
+            # violations[g, 0] = pivot - len(group_pred_class_idxs)/len(group_class_idxs)
             violations[g, 0] = len(group_pred_class_idxs)/len(group_class_idxs) - pivot # P(y_hat = 1 | g = g, y = 1) - P(y_hat = 1 | y = 1)
             violations[g, 1] = violations[g, 0]
         print('violations', violations)
         return acc, violations
 
 
-    # update weight
-    def debias_weights(self, label, sen_attrs, extended_multipliers, num_groups, num_classes):  #
-        weights = torch.zeros(len(label))
-        w_matrix = torch.sigmoid(extended_multipliers) # g by c
-        weights = w_matrix[sen_attrs, label]
+    def debias_weights(self, target_criterion, label, sen_attrs, extended_multipliers, num_groups, num_classes):  #
+        if target_criterion == "eo" or target_criterion == "dp":
+            weights = torch.zeros(len(label))
+            w_matrix = torch.sigmoid(extended_multipliers) # g by c
+            weights = w_matrix[sen_attrs, label]
+        
+        elif target_criterion == "eopp":
+            exponents = torch.zeros(len(label)).cuda()
 
+            for i, m in enumerate(extended_multipliers[:, 0]):
+                group_idxs = torch.where(sen_attrs == i)[0]
+                exponents[group_idxs] -= m
+            weights = torch.exp(exponents) / (torch.exp(exponents) + torch.exp(-exponents))
+            weights = torch.where(label == 1, 1 - weights, weights)
+        
         # for i in range(num_groups):
         #         group_idxs = torch.where(sen_attrs == i)[0]
         #         w_tilde = torch.exp(extended_multipliers[i])

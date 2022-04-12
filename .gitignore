@@ -3,3 +3,4 @@
 ./trained_models/
 ./data/retiring_adult
 ./data/retiring_adult_coverage
+./influence_score

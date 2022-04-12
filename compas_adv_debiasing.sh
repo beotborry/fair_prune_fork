@@ -9,8 +9,11 @@ do
 	do
 		for eta in 0.001 0.003 0.005 0.01
 		do
-			python3 main.py --device 1 --dataset compas --sen-attr sex --lr 0.0005 --epoch 50 --batch-size 128 --seed $seed --method adv_debiasing --optimizer Adam --model mlp --img-size 401 --weight-decay 0.0005 --date 20220214 --eta $eta --adv-lambda $lambda --target-criterion eopp
-			python3 main.py --device 1 --dataset compas --sen-attr sex --lr 0.0005 --epoch 50 --batch-size 128 --seed $seed --method adv_debiasing --optimizer Adam --model mlp --img-size 401 --weight-decay 0.0005 --date 20220214 --eta $eta --adv-lambda $lambda --target-criterion eo
+			for k in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+			do
+			python3 main.py --device 1 --dataset compas --sen-attr sex --lr 0.0005 --epoch 50 --batch-size 128 --seed $seed --method adv_debiasing --optimizer Adam --model mlp --img-size 401 --weight-decay 0.0005 --date 20220401 --eta $eta --adv-lambda $lambda --target-criterion eopp --influence_removing 1 --k $k
+			# python3 main.py --device 1 --dataset compas --sen-attr sex --lr 0.0005 --epoch 50 --batch-size 128 --seed $seed --method adv_debiasing --optimizer Adam --model mlp --img-size 401 --weight-decay 0.0005 --date 20220315 --eta $eta --adv-lambda $lambda --target-criterion eo --influence_removing 1 --k $k
+			done
 		done
 	done
 done

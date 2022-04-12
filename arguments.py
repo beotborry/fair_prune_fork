@@ -112,6 +112,10 @@ def get_args():
     parser.add_argument('--apply-consistencyloss', action='store_true', default=False, help='apply consistency loss')
 
 
+    # for removing data with influence score
+    parser.add_argument('--influence_removing', default=0, type=int, help="removing data with influence score")
+    parser.add_argument('--k', default=0.0, type=float, help="how many data will be removed with influence score")
+
 
     args = parser.parse_args()
 

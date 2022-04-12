@@ -5,12 +5,12 @@ from data_handler.tabular_dataset import TabularDataset
 
 class RetiringCoverageDataset_torch(TabularDataset):
     """Adult dataset."""
-    def __init__(self, root, split='train', sen_attr='sex', group_mode=-1):
+    def __init__(self, root, split='train', sen_attr='sex', group_mode=-1, influence_removing = False, k = None, influence_filename=None, loss_info_filename=None):
 
         dataset = RetiringCoverageDataset(root_dir=root)
         print(dataset.feature_names)
         if sen_attr == 'race':
-            sen_attr_idx = 18
+            sen_attr_idx = 3
         else:
             raise Exception('Not allowed group')
 
@@ -18,7 +18,7 @@ class RetiringCoverageDataset_torch(TabularDataset):
         self.num_classes = 2
 
         super(RetiringCoverageDataset_torch, self).__init__(root=root, dataset=dataset, sen_attr_idx=sen_attr_idx,
-                                                 split=split, group_mode=group_mode)
+                                                 split=split, group_mode=group_mode, influence_removing=influence_removing, k = k, influence_filename=influence_filename, loss_info_filename=loss_info_filename)
 
 
 # def load_preproc_data_adult(protected_attributes=None, sub_samp=False, balance=False):

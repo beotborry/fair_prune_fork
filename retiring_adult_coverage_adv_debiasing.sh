@@ -6,9 +6,11 @@ do
 	do
 		for eta in 0.001 0.003 0.005 0.01
 		do
-			python3 main.py --device 3 --dataset retiring_adult_coverage --sen-attr race --lr 0.0005 --epoch 50 --batch-size 128 --seed $seed --method adv_debiasing --optimizer Adam --model mlp --img-size 19 --weight-decay 0.0005 --date 20220214 --eta $eta --adv-lambda $lambda --target-criterion eopp
-			python3 main.py --device 3 --dataset retiring_adult_coverage --sen-attr race --lr 0.0005 --epoch 50 --batch-size 128 --seed $seed --method adv_debiasing --optimizer Adam --model mlp --img-size 19 --weight-decay 0.0005 --date 20220214 --eta $eta --adv-lambda $lambda --target-criterion eo
-
+			for k in 1 2 3 4 5 6 7 8 9 10
+			do
+			python3 main.py --device 3 --dataset retiring_adult_coverage --sen-attr race --lr 0.0005 --epoch 50 --batch-size 128 --seed $seed --method adv_debiasing --optimizer Adam --model mlp --img-size 131 --weight-decay 0.0005 --date 20220401 --eta $eta --adv-lambda $lambda --target-criterion eopp --influence_removing 1 --k $k
+			#python3 main.py --device 3 --dataset retiring_adult_coverage --sen-attr race --lr 0.0005 --epoch 50 --batch-size 128 --seed $seed --method adv_debiasing --optimizer Adam --model mlp --img-size 131 --weight-decay 0.0005 --date 20220329 --eta $eta --adv-lambda $lambda --target-criterion eo --influence_removing 0 --k $k
+			done
 		done
 	done
 done

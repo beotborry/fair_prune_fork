@@ -91,6 +91,8 @@ def make_log_name(args):
 
         if args.method =='adv_debiasing':
             log_name += '_adv_lamb{}_eta{}_constraint{}'.format(args.adv_lambda, args.eta, args.target_criterion)
+            if args.influence_removing == True:
+                log_name += '_influence_removing_k{}'.format(args.k)
 
         elif args.method.startswith('decouple'):
             log_name += '_{}'.format(args.group_estimator)
@@ -106,7 +108,8 @@ def make_log_name(args):
 
         elif args.method == 'reweighting':
             log_name += '_constraint{}_eta{}_iter{}'.format(args.reweighting_target_criterion, args.eta, args.iteration)
-
+            if args.influence_removing == True:
+                log_name += '_influence_removing_k{}'.format(args.k)
         elif args.method == 'scratch_mmd' or args.method.startswith('mfd'):
             log_name += '_lamb{}'.format(args.lamb)
             if args.get_teacher_weight:

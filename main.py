@@ -7,6 +7,7 @@ from utils import check_log_dir, make_log_name, set_seed
 from arguments import get_args
 import time
 import os 
+import pickle
 
 args = get_args()
 
@@ -47,6 +48,24 @@ def main():
                   'target_fairness' : args.target_criterion}
         kwargs.update(fairbatch_kwargs)
 
+    if args.influence_removing == True:
+        if args.method == 'reweighting':
+            influence_filename = f"./influence_score/fair_only_split/{args.dataset}_{args.reweighting_target_criterion}_influence_score_seed_{args.seed}_sen_attr_{args.sen_attr}" 
+            loss_info_filename = f"./influence_score/fair_only_split/{args.dataset}_{args.reweighting_target_criterion}_loss_info_seed_{args.seed}_sen_attr_sex.txt"
+        elif args.method == "adv_debiasing":
+            influence_filename = f"./influence_score/fair_only_split/{args.dataset}_{args.target_criterion}_influence_score_seed_{args.seed}_sen_attr_{args.sen_attr}"
+            loss_info_filename = f"./influence_score/fair_only_split/{args.dataset}_{args.target_criterion}_loss_info_seed_{args.seed}_sen_attr_sex.txt"
+
+        # with open(f"./influence_score/{args.dataset}_{args.reweighting_target_criterion}_influence_score_seed_{args.seed}_sen_attr_{args.sen_attr}.txt", "rb") as fp:
+        #     influence_score = pickle.load(fp)
+
+        influence_kwargs = {'k': args.k,
+                            'influence_removing': args.influence_removing,
+                            'influence_filename': influence_filename,
+                            'loss_info_filename': loss_info_filename}
+
+        kwargs.update(influence_kwargs)
+        
     tmp = data_handler.DataloaderFactory.get_dataloader(**kwargs)
     num_classes, num_groups, train_loader, valid_loader, test_loader = tmp
     

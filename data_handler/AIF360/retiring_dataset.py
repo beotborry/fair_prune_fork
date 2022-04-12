@@ -21,7 +21,7 @@ class RetiringDataset(StandardDataset):
                  protected_attribute_names=['RAC1P'],
                  privileged_classes=[[1]],
                  instance_weights_name=None,
-                 categorical_features=[],
+                 categorical_features=['COW','SCHL','MAR','OCCP','POBP','RELP'],
                  features_to_keep=[], features_to_drop=[],
                  na_values=['NaN'], custom_preprocessing=None,
                  metadata=None):
@@ -99,6 +99,14 @@ class RetiringDataset(StandardDataset):
 
             group_transform = lambda x: x == 1
             df['RAC1P'] = group_transform(df['RAC1P'])
+        
+            sex_binarizer = lambda x: x == 1
+            df['SEX'] = sex_binarizer(df['SEX'])
+
+            # WKHP, AGEP Normalize
+            df['AGEP'] = (df['AGEP'] - df['AGEP'].mean()) / df['AGEP'].std()
+            df['WKHP'] = (df['WKHP'] - df['WKHP'].mean()) / df['WKHP'].std()
+
             df.to_csv("./data/retiring_adult/retiring_adult.csv", sep=',', index=False, columns=column_names)
 
             import sys

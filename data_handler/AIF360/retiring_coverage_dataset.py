@@ -22,7 +22,7 @@ class RetiringCoverageDataset(StandardDataset):
                  protected_attribute_names=['RAC1P'],
                  privileged_classes=[[True]],
                  instance_weights_name=None,
-                 categorical_features=[],
+                 categorical_features=['SCHL', 'MAR', 'DIS', 'ESP', 'CIT', 'MIG', 'MIL', 'ANC', 'NATIVITY', 'DEAR', 'DEYE', 'DREM', 'ESR', 'ST', 'FER'],
                  features_to_keep=[], features_to_drop=[],
                  na_values=['NaN'], custom_preprocessing=None,
                  metadata=None):
@@ -112,6 +112,10 @@ class RetiringCoverageDataset(StandardDataset):
 
             group_transform = lambda x: x == 1
             df['RAC1P'] = group_transform(df['RAC1P'])
+
+            sex_binarizer = lambda x: x == 1
+            df['SEX'] = sex_binarizer(df['SEX'])
+
             df.to_csv("./data/retiring_adult_coverage/retiring_adult_coverage.csv", sep=',', index=False, columns=column_names)
 
             import sys

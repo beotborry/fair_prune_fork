@@ -20,7 +20,7 @@ class DatasetFactory:
         pass
 
     @staticmethod
-    def get_dataset(name, split='train', target='Attractive',group_mode=-1, sen_attr='sex', skew_ratio=0.8):
+    def get_dataset(name, split='train', target='Attractive',group_mode=-1, sen_attr='sex', skew_ratio=0.8, influence_removing=False, k=None, influence_filename=None, loss_info_filename=None):
         # make kwargs
         root = f'./data/{name}'
         kwargs = {'root':root,
@@ -30,6 +30,10 @@ class DatasetFactory:
         tabular_datas = ['adult','compas', 'credit', 'bank', 'retiring_adult', 'retiring_adult_coverage']
         if name in tabular_datas:
             kwargs['sen_attr'] = sen_attr
+            kwargs['influence_removing'] = influence_removing
+            kwargs['k'] = k
+            kwargs['influence_filename'] = influence_filename
+            kwargs['loss_info_filename'] = loss_info_filename
         if name == 'celeba':
             kwargs['target_attr'] = target
         if name == 'cifar10s':
@@ -44,7 +48,7 @@ class DatasetFactory:
         return class_(**kwargs)
 
 class GenericDataset(data.Dataset):
-    def __init__(self, root, split='train', transform=None, group_mode=-1):
+    def __init__(self, root, split='train', transform=None, group_mode=-1, influence_removing=False, k=None, influence_filename=None, loss_info_filename=None):
         self.root = root
         self.split = split
         self.transform = transform

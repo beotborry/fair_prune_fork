@@ -1,3 +1,4 @@
+from cmath import inf
 from data_handler.dataset_factory import DatasetFactory
 
 import numpy as np
@@ -12,12 +13,15 @@ class DataloaderFactory:
     @staticmethod
     def get_dataloader(name, batch_size=128, seed=0, num_workers=4,
                        target='Attractive', labelwise=False, group_mode=-1, drop_last=True, sen_attr='sex', skew_ratio=0.8,
-                       alpha=None, target_fairness=None):
+                       alpha=None, target_fairness=None, influence_removing=False, k=None, influence_filename=None, loss_info_filename=None):
 
         test_dataset = DatasetFactory.get_dataset(name, split='test', target=target,
-                                                  group_mode=group_mode, sen_attr=sen_attr, skew_ratio=skew_ratio)
+                                                  group_mode=group_mode, sen_attr=sen_attr, skew_ratio=skew_ratio, influence_removing=influence_removing, k=k, influence_filename=influence_filename, loss_info_filename=loss_info_filename)
+        #print(test_dataset[0])
+        #print(test_dataset[0].shape)
+        
         train_dataset = DatasetFactory.get_dataset(name, split='train', target=target,
-                                                   group_mode=group_mode, sen_attr=sen_attr, skew_ratio=skew_ratio)
+                                                   group_mode=group_mode, sen_attr=sen_attr, skew_ratio=skew_ratio, influence_removing=influence_removing, k=k, influence_filename=influence_filename, loss_info_filename=loss_info_filename)
         # valid_dataset = DatasetFactory.get_dataset(name, split='valid', target=target,
         #                                            group_mode=group_mode, sen_attr=sen_attr, skew_ratio=skew_ratio)
 
